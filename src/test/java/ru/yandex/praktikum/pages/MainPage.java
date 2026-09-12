@@ -1,5 +1,6 @@
 package ru.yandex.praktikum.pages;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -45,51 +46,58 @@ public class MainPage extends BasePage {
         wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
 
+    @Step("Открыть главную страницу")
     public void open() {
         driver.get(BASE_URL);
         wait.until(ExpectedConditions.visibilityOfElementLocated(bunsTab));
     }
 
+    @Step("Нажать кнопку «Войти в аккаунт»")
     public void clickLogin() {
         wait.until(
                 ExpectedConditions.elementToBeClickable(loginButton)
         ).click();
     }
 
+    @Step("Нажать «Личный кабинет»")
     public void clickAccount() {
         wait.until(
                 ExpectedConditions.elementToBeClickable(accountLink)
         ).click();
     }
 
+    @Step("Нажать «Конструктор»")
     public void clickConstructor() {
         wait.until(
                 ExpectedConditions.elementToBeClickable(constructorLink)
         ).click();
     }
 
+    @Step("Нажать на логотип Stellar Burgers")
     public void clickLogo() {
         wait.until(
                 ExpectedConditions.elementToBeClickable(logo)
         ).click();
     }
 
+    @Step("Перейти в раздел «Булки»")
     public void clickBuns() {
         clickTab(bunsTab);
     }
 
+    @Step("Перейти в раздел «Соусы»")
     public void clickSauces() {
         clickTab(saucesTab);
     }
 
+    @Step("Перейти в раздел «Начинки»")
     public void clickFillings() {
         clickTab(fillingsTab);
     }
 
     private void clickTab(By locator) {
-        WebElement tab = wait.until(
-                ExpectedConditions.elementToBeClickable(locator)
-        );
+        WebElement tab =
+                wait.until(ExpectedConditions.elementToBeClickable(locator));
 
         tab.click();
 
@@ -100,14 +108,17 @@ public class MainPage extends BasePage {
         );
     }
 
+    @Step("Проверить, что выбран раздел «Булки»")
     public boolean isBunsSelected() {
         return isTabSelected(bunsTab);
     }
 
+    @Step("Проверить, что выбран раздел «Соусы»")
     public boolean isSaucesSelected() {
         return isTabSelected(saucesTab);
     }
 
+    @Step("Проверить, что выбран раздел «Начинки»")
     public boolean isFillingsSelected() {
         return isTabSelected(fillingsTab);
     }
@@ -120,6 +131,7 @@ public class MainPage extends BasePage {
         );
     }
 
+    @Step("Проверить отображение главной страницы")
     public boolean isMainPageDisplayed() {
         return wait.until(
                 ExpectedConditions.visibilityOfElementLocated(bunsTab)

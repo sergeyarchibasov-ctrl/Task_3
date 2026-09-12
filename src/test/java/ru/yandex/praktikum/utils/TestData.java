@@ -2,6 +2,7 @@ package ru.yandex.praktikum.utils;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import ru.yandex.praktikum.model.User;
 
 import java.util.UUID;
 
@@ -24,22 +25,17 @@ public class TestData {
     }
 
     public void createUser() {
-
         if (email == null) {
             prepareUserData();
         }
 
         RestAssured.baseURI = BASE_URL;
 
+        User user = new User(email, password, name);
+
         Response response = given()
                 .header("Content-Type", "application/json")
-                .body(
-                        "{"
-                                + "\"email\":\"" + email + "\","
-                                + "\"password\":\"" + password + "\","
-                                + "\"name\":\"" + name + "\""
-                                + "}"
-                )
+                .body(user)
                 .when()
                 .post("/api/auth/register");
 
@@ -55,7 +51,6 @@ public class TestData {
     }
 
     public void deleteUser() {
-
         if (accessToken == null || accessToken.isEmpty()) {
             return;
         }
@@ -69,31 +64,25 @@ public class TestData {
     }
 
     public void deleteUserAfterUiRegistration() {
-
         if (email == null || password == null) {
             return;
         }
 
         RestAssured.baseURI = BASE_URL;
 
+        User user = new User(email, password);
+
         Response response = given()
                 .header("Content-Type", "application/json")
-                .body(
-                        "{"
-                                + "\"email\":\"" + email + "\","
-                                + "\"password\":\"" + password + "\""
-                                + "}"
-                )
+                .body(user)
                 .when()
                 .post("/api/auth/login");
 
         if (response.statusCode() == 200) {
-
             String token =
                     response.jsonPath().getString("accessToken");
 
             if (token != null && !token.isEmpty()) {
-
                 given()
                         .header("Authorization", token)
                         .when()
@@ -112,9 +101,5 @@ public class TestData {
 
     public String getName() {
         return name;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
     }
 }

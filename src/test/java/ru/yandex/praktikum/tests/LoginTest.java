@@ -1,8 +1,8 @@
 package ru.yandex.praktikum.tests;
 
-import io.qameta.allure.Step;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import ru.yandex.praktikum.pages.ForgotPasswordPage;
@@ -20,7 +20,7 @@ public class LoginTest {
     private TestData testData;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testData = new TestData();
         testData.prepareUserData();
         testData.createUser();
@@ -28,105 +28,8 @@ public class LoginTest {
         driver = BrowserFactory.createDriver();
     }
 
-    @Test
-    public void shouldLoginFromMainPage() {
-        openMainPage();
-        clickLoginFromMainPage();
-        loginAsTestUser();
-        checkSuccessfulLogin();
-    }
-
-    @Test
-    public void shouldLoginFromAccountButton() {
-        openMainPage();
-        clickAccountFromMainPage();
-        loginAsTestUser();
-        checkSuccessfulLogin();
-    }
-
-    @Test
-    public void shouldLoginFromRegistrationPage() {
-        openRegistrationPage();
-        clickLoginFromRegistration();
-        loginAsTestUser();
-        checkSuccessfulLogin();
-    }
-
-    @Test
-    public void shouldLoginFromForgotPasswordPage() {
-        openForgotPasswordPage();
-        clickLoginFromForgotPassword();
-        loginAsTestUser();
-        checkSuccessfulLogin();
-    }
-
-    @Step("Открыть главную страницу")
-    private void openMainPage() {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.open();
-    }
-
-    @Step("Нажать «Войти в аккаунт»")
-    private void clickLoginFromMainPage() {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.clickLogin();
-    }
-
-    @Step("Нажать «Личный Кабинет»")
-    private void clickAccountFromMainPage() {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.clickAccount();
-    }
-
-    @Step("Открыть страницу регистрации")
-    private void openRegistrationPage() {
-        RegisterPage registerPage = new RegisterPage(driver);
-        registerPage.open();
-    }
-
-    @Step("Перейти со страницы регистрации на страницу входа")
-    private void clickLoginFromRegistration() {
-        RegisterPage registerPage = new RegisterPage(driver);
-        registerPage.clickLogin();
-    }
-
-    @Step("Открыть страницу восстановления пароля")
-    private void openForgotPasswordPage() {
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.open();
-        loginPage.clickForgotPassword();
-    }
-
-    @Step("Перейти со страницы восстановления пароля на страницу входа")
-    private void clickLoginFromForgotPassword() {
-        ForgotPasswordPage forgotPasswordPage =
-                new ForgotPasswordPage(driver);
-
-        forgotPasswordPage.clickLogin();
-    }
-
-    @Step("Авторизоваться под тестовым пользователем")
-    private void loginAsTestUser() {
-        LoginPage loginPage = new LoginPage(driver);
-
-        loginPage.login(
-                testData.getEmail(),
-                testData.getPassword()
-        );
-    }
-
-    @Step("Проверить успешную авторизацию")
-    private void checkSuccessfulLogin() {
-        MainPage mainPage = new MainPage(driver);
-
-        assertTrue(
-                mainPage.isMainPageDisplayed(),
-                "После авторизации главная страница не открылась"
-        );
-    }
-
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         if (driver != null) {
             driver.quit();
         }
@@ -134,5 +37,87 @@ public class LoginTest {
         if (testData != null) {
             testData.deleteUser();
         }
+    }
+
+    @Test
+    @DisplayName("Вход по кнопке «Войти в аккаунт» на главной странице")
+    void shouldLoginFromMainPageLoginButton() {
+        MainPage mainPage = new MainPage(driver);
+        mainPage.open();
+        mainPage.clickLogin();
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login(
+                testData.getEmail(),
+                testData.getPassword()
+        );
+
+        assertTrue(
+                mainPage.isMainPageDisplayed(),
+                "После входа главная страница не открылась"
+        );
+    }
+
+    @Test
+    @DisplayName("Вход через кнопку «Личный кабинет»")
+    void shouldLoginFromAccountButton() {
+        MainPage mainPage = new MainPage(driver);
+        mainPage.open();
+        mainPage.clickAccount();
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login(
+                testData.getEmail(),
+                testData.getPassword()
+        );
+
+        assertTrue(
+                mainPage.isMainPageDisplayed(),
+                "После входа через «Личный кабинет» главная страница не открылась"
+        );
+    }
+
+    @Test
+    @DisplayName("Вход через форму регистрации")
+    void shouldLoginFromRegistrationPage() {
+        RegisterPage registerPage = new RegisterPage(driver);
+        registerPage.open();
+        registerPage.clickLogin();
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login(
+                testData.getEmail(),
+                testData.getPassword()
+        );
+
+        MainPage mainPage = new MainPage(driver);
+
+        assertTrue(
+                mainPage.isMainPageDisplayed(),
+                "После входа через форму регистрации главная страница не открылась"
+        );
+    }
+
+    @Test
+    @DisplayName("Вход через форму восстановления пароля")
+    void shouldLoginFromForgotPasswordPage() {
+        ForgotPasswordPage forgotPasswordPage =
+                new ForgotPasswordPage(driver);
+
+        forgotPasswordPage.open();
+        forgotPasswordPage.clickLogin();
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login(
+                testData.getEmail(),
+                testData.getPassword()
+        );
+
+        MainPage mainPage = new MainPage(driver);
+
+        assertTrue(
+                mainPage.isMainPageDisplayed(),
+                "После входа через форму восстановления пароля главная страница не открылась"
+        );
     }
 }

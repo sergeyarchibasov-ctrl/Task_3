@@ -1,8 +1,8 @@
 package ru.yandex.praktikum.tests;
 
-import io.qameta.allure.Step;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import ru.yandex.praktikum.pages.MainPage;
@@ -16,68 +16,51 @@ public class ConstructorTest {
     private MainPage mainPage;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         driver = BrowserFactory.createDriver();
+
         mainPage = new MainPage(driver);
-
-        openConstructor();
-    }
-
-    @Test
-    public void shouldSelectBunsTab() {
-        selectSauces();
-        selectBuns();
-
-        assertTrue(
-                mainPage.isBunsSelected(),
-                "Вкладка «Булки» не выбрана"
-        );
-    }
-
-    @Test
-    public void shouldSelectSaucesTab() {
-        selectSauces();
-
-        assertTrue(
-                mainPage.isSaucesSelected(),
-                "Вкладка «Соусы» не выбрана"
-        );
-    }
-
-    @Test
-    public void shouldSelectFillingsTab() {
-        selectFillings();
-
-        assertTrue(
-                mainPage.isFillingsSelected(),
-                "Вкладка «Начинки» не выбрана"
-        );
-    }
-
-    @Step("Открыть конструктор")
-    private void openConstructor() {
         mainPage.open();
     }
 
-    @Step("Выбрать вкладку «Булки»")
-    private void selectBuns() {
-        mainPage.clickBuns();
-    }
-
-    @Step("Выбрать вкладку «Соусы»")
-    private void selectSauces() {
-        mainPage.clickSauces();
-    }
-
-    @Step("Выбрать вкладку «Начинки»")
-    private void selectFillings() {
-        mainPage.clickFillings();
-    }
-
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         if (driver != null) {
             driver.quit();
         }
+    }
+
+    @Test
+    @DisplayName("Переход в раздел «Булки»")
+    void shouldSwitchToBunsTab() {
+        mainPage.clickSauces();
+        mainPage.clickBuns();
+
+        assertTrue(
+                mainPage.isBunsSelected(),
+                "Раздел «Булки» не выбран"
+        );
+    }
+
+    @Test
+    @DisplayName("Переход в раздел «Соусы»")
+    void shouldSwitchToSaucesTab() {
+        mainPage.clickSauces();
+
+        assertTrue(
+                mainPage.isSaucesSelected(),
+                "Раздел «Соусы» не выбран"
+        );
+    }
+
+    @Test
+    @DisplayName("Переход в раздел «Начинки»")
+    void shouldSwitchToFillingsTab() {
+        mainPage.clickFillings();
+
+        assertTrue(
+                mainPage.isFillingsSelected(),
+                "Раздел «Начинки» не выбран"
+        );
     }
 }

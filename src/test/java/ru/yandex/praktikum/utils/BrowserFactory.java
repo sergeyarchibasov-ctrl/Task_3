@@ -10,15 +10,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 
 public class BrowserFactory {
 
-    private static final String YANDEX_BINARY =
-            "C:\\Program Files\\Yandex\\YandexBrowser\\Application\\browser.exe";
-
-    private static final String YANDEX_DRIVER =
-            "C:\\WebDriver\\yandex\\chromedriver.exe";
+    private static final String YANDEX_BINARY_PROPERTY = "yandex.binary";
+    private static final String YANDEX_DRIVER_PROPERTY = "yandex.driver";
 
     public static WebDriver createDriver() {
         String browser = System.getProperty("browser", "chrome");
@@ -27,14 +23,18 @@ public class BrowserFactory {
             return createYandexDriver();
         }
 
-        // Google Chrome не изменяем
         return new ChromeDriver();
     }
 
     private static WebDriver createYandexDriver() {
-        ChromeOptions options = new ChromeOptions();
+        String yandexBinary =
+                getRequiredSystemProperty(YANDEX_BINARY_PROPERTY);
 
-        options.setBinary(YANDEX_BINARY);
+        String yandexDriver =
+                getRequiredSystemProperty(YANDEX_DRIVER_PROPERTY);
+
+        ChromeOptions options = new ChromeOptions();
+        options.setBinary(yandexBinary);
 
         try {
             Path profileDirectory =
@@ -56,7 +56,7 @@ public class BrowserFactory {
 
         ChromeDriverService service =
                 new ChromeDriverService.Builder()
-                        .usingDriverExecutable(new File(YANDEX_DRIVER))
+                        .usingDriverExecutable(new File(yandexDriver))
                         .build();
 
         WebDriver driver = new ChromeDriver(service, options);
@@ -66,21 +66,19 @@ public class BrowserFactory {
         return driver;
     }
 
-    private static void prepareCleanYandexTab(WebDriver driver) {
-        String newTabHandle =
-                driver.switchTo()
-                        .newWindow(WindowType.TAB)
-                        .getWindowHandle();
+    private static String getRequiredSystemProperty(String propertyName) {
+        String value = System.getProperty(propertyName);
 
-        Set<String> windowHandles = driver.getWindowHandles();
-
-        for (String handle : windowHandles) {
-            if (!handle.equals(newTabHandle)) {
-                driver.switchTo().window(handle);
-                driver.close();
-            }
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Не задана системная переменная -D" + propertyName
+            );
         }
 
-        driver.switchTo().window(newTabHandle);
+        return value;
+    }
+
+    private static void prepareCleanYandexTab(WebDriver driver) {
+        driver.switchTo().newWindow(WindowType.TAB);
     }
 }
